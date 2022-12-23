@@ -1,41 +1,44 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { randomUUID } from 'crypto';
+import { Model } from 'mongoose';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
 import { User } from 'src/users/interfaces/user.interface';
+import { User as UserModel, UserDocument } from './schemas/user.schema';
 
 @Injectable()
 export class UsersService {
-  private users: User[] = [];
+  constructor(
+    @InjectModel(UserModel.name) private userModel: Model<UserDocument>,
+  ) {}
 
-  create(data: CreateUserDto) {
-    this.users.push({
-      id: this.users.length + 1,
-      ...data,
-    });
+  async create(data: CreateUserDto) {
+    const dataWithId = { ...data, id: randomUUID() };
+    const createdUser = new this.userModel(dataWithId);
+    return await createdUser.save();
   }
 
-  findAll(): User[] {
-    return this.users;
+  async findAll(): Promise<User[]> {
+    return await this.userModel.find().exec();
   }
 
-  findOne(id: number): User {
-    const user = this.users.find((user) => user.id === id);
+  async findOne(id: string): Promise<User | null> {
+    return await this.userModel.findOne({ id }).exec();
+  }
+
+  async update(id: string, data: UpdateUserDto): Promise<User | null> {
+    const user = await this.userModel.findOne({ id }).exec();
     if (user) {
+      user.name = data.name;
+      user.email = data.email;
+      await user.save();
       return user;
     }
-    throw new NotFoundException();
+    return null;
   }
 
-  update(id: number, data: UpdateUserDto) {
-    let updatedUser = this.findOne(id);
-    updatedUser = { ...updatedUser, ...data };
-    const userIndex = this.users.findIndex((user) => user.id === id);
-    this.users[userIndex] = updatedUser;
-    return updatedUser.id;
-  }
-
-  remove(id: number) {
-    const updatedUsers = this.users.filter((user) => user.id !== id);
-    this.users = updatedUsers;
+  async remove(id: string) {
+    await this.userModel.findOneAndRemove({ id }).exec();
   }
 }

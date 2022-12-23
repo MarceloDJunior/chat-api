@@ -4,8 +4,8 @@ import {
   Delete,
   Get,
   HttpCode,
+  NotFoundException,
   Param,
-  ParseIntPipe,
   Post,
   Put,
 } from '@nestjs/common';
@@ -25,23 +25,33 @@ export class UsersController {
   }
 
   @Get()
-  findAll(): User[] {
-    return this.usersService.findAll();
+  async findAll(): Promise<User[]> {
+    return await this.usersService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number): User {
-    return this.usersService.findOne(id);
+  async findOne(@Param('id') id: string): Promise<User> {
+    const user = await this.usersService.findOne(id);
+    if (user) {
+      return user;
+    }
+    throw new NotFoundException();
   }
 
   @Put(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateUserDto) {
-    this.usersService.update(id, body);
-    return id;
+  async update(
+    @Param('id') id: string,
+    @Body() body: UpdateUserDto,
+  ): Promise<User> {
+    const updatedUser = await this.usersService.update(id, body);
+    if (updatedUser) {
+      return updatedUser;
+    }
+    throw new NotFoundException();
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number): void {
-    this.usersService.remove(id);
+  async remove(@Param('id') id: string): Promise<void> {
+    await this.usersService.remove(id);
   }
 }
