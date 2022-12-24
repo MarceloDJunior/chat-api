@@ -1,44 +1,42 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { randomUUID } from 'crypto';
-import { Model } from 'mongoose';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
 import { User } from 'src/users/interfaces/user.interface';
-import { User as UserModel, UserDocument } from './schemas/user.schema';
+import { User as UserModel } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(UserModel.name) private userModel: Model<UserDocument>,
+    @InjectRepository(UserModel) private usersRepository: Repository<UserModel>,
   ) {}
 
   async create(data: CreateUserDto) {
-    const dataWithId = { ...data, id: randomUUID() };
-    const createdUser = new this.userModel(dataWithId);
-    return await createdUser.save();
+    const createdUser = await this.usersRepository.insert(data);
+    return createdUser;
   }
 
   async findAll(): Promise<User[]> {
-    return await this.userModel.find().exec();
+    return await this.usersRepository.find();
   }
 
-  async findOne(id: string): Promise<User | null> {
-    return await this.userModel.findOne({ id }).exec();
+  async findOne(id: number): Promise<User | null> {
+    return await this.usersRepository.findOne({ where: { id } });
   }
 
-  async update(id: string, data: UpdateUserDto): Promise<User | null> {
-    const user = await this.userModel.findOne({ id }).exec();
+  async update(id: number, data: UpdateUserDto): Promise<User | null> {
+    const user = await this.findOne(id);
     if (user) {
       user.name = data.name;
       user.email = data.email;
-      await user.save();
+      await this.usersRepository.update(id, user);
       return user;
     }
     return null;
   }
 
-  async remove(id: string) {
-    await this.userModel.findOneAndRemove({ id }).exec();
+  async remove(id: number) {
+    await this.usersRepository.delete(id);
   }
 }
