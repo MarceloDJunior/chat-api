@@ -5,10 +5,8 @@ import { loggerMiddleware } from './logger.middleware';
 import { config } from './config/configutation';
 import { UsersModule } from './users/users.module';
 import { UsersController } from './users/users.controller';
-import { User } from './users/entities/user.entity';
 import { MessagesModule } from './messages/messages.module';
 import { MessagesController } from './messages/messages.controller';
-import { Message } from './messages/entities/message.entity';
 
 @Module({
   imports: [
@@ -20,8 +18,8 @@ import { Message } from './messages/entities/message.entity';
       username: config.database.username,
       password: config.database.password,
       database: config.database.name,
-      entities: [User, Message],
       synchronize: true,
+      autoLoadEntities: true,
     }),
     UsersModule,
     MessagesModule,
