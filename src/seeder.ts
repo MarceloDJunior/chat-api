@@ -5,6 +5,7 @@ import { UsersSeeder } from './users/seeders/users.seeder';
 import { ConfigModule } from '@nestjs/config';
 import { User } from './users/entities/user.entity';
 import { Message } from './messages/entities/message.entity';
+import { MessagesSeeder } from './messages/seeders/messages.seeder';
 
 seeder({
   imports: [
@@ -21,4 +22,4 @@ seeder({
     }),
     TypeOrmModule.forFeature([User, Message]),
   ],
-}).run([UsersSeeder]);
+}).run([UsersSeeder, MessagesSeeder]);
