@@ -1,9 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Message } from './entities/message.entity';
-import { SendMessageDto } from './dtos/send-message.dto';
 import { UsersService } from 'src/users/users.service';
+import { PageOptionsDto } from 'src/common/dtos/page-options.dto';
+import { PageDto } from 'src/common/dtos/page.dto';
+import { PageMetaDto } from 'src/common/dtos/page-meta.dto';
+import { SendMessageDto } from './dtos/send-message.dto';
+import { Message } from './entities/message.entity';
 
 @Injectable()
 export class MessagesService {
@@ -12,8 +15,12 @@ export class MessagesService {
     private readonly usersService: UsersService,
   ) {}
 
-  async getRecentMessages(user1: number, user2: number): Promise<Message[]> {
-    return await this.messagesRepository.find({
+  async getMessages(
+    user1: number,
+    user2: number,
+    pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<Message>> {
+    const [messages, itemCount] = await this.messagesRepository.findAndCount({
       where: [
         {
           from: {
@@ -27,10 +34,18 @@ export class MessagesService {
         },
       ],
       order: {
-        dateTime: 'DESC',
+        dateTime: pageOptionsDto.order,
       },
-      take: 30,
     });
+
+    const paginatedMessages = messages.slice(
+      pageOptionsDto.skip,
+      pageOptionsDto.take + pageOptionsDto.skip,
+    );
+
+    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+
+    return new PageDto(paginatedMessages, pageMetaDto);
   }
 
   async sendMessage({ fromId, toId, text }: SendMessageDto): Promise<void> {

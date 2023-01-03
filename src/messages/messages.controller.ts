@@ -5,7 +5,10 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
 } from '@nestjs/common';
+import { PageOptionsDto } from 'src/common/dtos/page-options.dto';
+import { PageDto } from 'src/common/dtos/page.dto';
 import { SendMessageDto } from './dtos/send-message.dto';
 import { Message } from './entities/message.entity';
 import { MessagesService } from './messages.service';
@@ -15,11 +18,12 @@ export class MessagesController {
   constructor(private messagesService: MessagesService) {}
 
   @Get(':user1/:user2')
-  async findByUsers(
+  async getMessages(
     @Param('user1', ParseIntPipe) user1: number,
     @Param('user2', ParseIntPipe) user2: number,
-  ): Promise<Message[]> {
-    return await this.messagesService.getRecentMessages(user1, user2);
+    @Query() pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<Message>> {
+    return await this.messagesService.getMessages(user1, user2, pageOptionsDto);
   }
 
   @Post('send')
