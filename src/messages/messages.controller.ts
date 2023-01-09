@@ -8,6 +8,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
+import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
 import { PageOptionsDto } from 'src/common/dtos/page-options.dto';
 import { PageDto } from 'src/common/dtos/page.dto';
 import { MessageDto } from './dtos/message.dto';
@@ -19,7 +20,7 @@ export class MessagesController {
   constructor(private messagesService: MessagesService) {}
 
   @Get(':user1/:user2')
-  @ApiOkResponse({ type: MessageDto })
+  @ApiPaginatedResponse(MessageDto)
   async getMessages(
     @Param('user1', ParseIntPipe) user1: number,
     @Param('user2', ParseIntPipe) user2: number,
