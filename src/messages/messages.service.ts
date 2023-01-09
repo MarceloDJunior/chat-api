@@ -7,6 +7,8 @@ import { PageDto } from 'src/common/dtos/page.dto';
 import { PageMetaDto } from 'src/common/dtos/page-meta.dto';
 import { SendMessageDto } from './dtos/send-message.dto';
 import { Message } from './entities/message.entity';
+import { MessageDto } from './dtos/message.dto';
+import { MessageMapper } from './mappers/message.mapper';
 
 @Injectable()
 export class MessagesService {
@@ -19,7 +21,7 @@ export class MessagesService {
     user1: number,
     user2: number,
     pageOptionsDto: PageOptionsDto,
-  ): Promise<PageDto<Message>> {
+  ): Promise<PageDto<MessageDto>> {
     const [messages, itemCount] = await this.messagesRepository.findAndCount({
       where: [
         {
@@ -36,9 +38,15 @@ export class MessagesService {
       order: {
         dateTime: pageOptionsDto.order,
       },
+      relations: {
+        from: true,
+        to: true,
+      },
     });
 
-    const paginatedMessages = messages.slice(
+    const messagesDto = messages.map(MessageMapper.toMessageDto);
+
+    const paginatedMessages = messagesDto.slice(
       pageOptionsDto.skip,
       pageOptionsDto.take + pageOptionsDto.skip,
     );

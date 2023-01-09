@@ -10,10 +10,16 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiNoContentResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+} from '@nestjs/swagger';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
-import { User } from 'src/users/interfaces/user.interface';
 import { UsersService } from 'src/users/users.service';
+import { UserDto } from './dtos/user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -21,17 +27,22 @@ export class UsersController {
 
   @Post()
   @HttpCode(204)
+  @ApiNoContentResponse({ description: 'Created successfully' })
+  @ApiBadRequestResponse({ description: 'Validation errors' })
   create(@Body() body: CreateUserDto): void {
     this.usersService.create(body);
   }
 
   @Get()
-  async findAll(): Promise<User[]> {
+  @ApiOkResponse({ type: UserDto })
+  async findAll(): Promise<UserDto[]> {
     return await this.usersService.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<User> {
+  @ApiOkResponse({ type: UserDto })
+  @ApiNotFoundResponse({ description: 'User not found' })
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<UserDto> {
     const user = await this.usersService.findOne(id);
     if (user) {
       return user;
@@ -40,10 +51,12 @@ export class UsersController {
   }
 
   @Put(':id')
+  @ApiOkResponse({ type: UserDto })
+  @ApiNotFoundResponse({ description: 'User not found' })
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateUserDto,
-  ): Promise<User> {
+  ): Promise<UserDto> {
     const updatedUser = await this.usersService.update(id, body);
     if (updatedUser) {
       return updatedUser;
@@ -52,7 +65,12 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @ApiNotFoundResponse({ description: 'User not found' })
   async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    await this.usersService.remove(id);
+    const user = await this.usersService.findOne(id);
+    if (user) {
+      return await this.usersService.remove(id);
+    }
+    throw new NotFoundException();
   }
 }

@@ -3,8 +3,9 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
-import { User } from 'src/users/interfaces/user.interface';
 import { User as UserModel } from './entities/user.entity';
+import { UserDto } from './dtos/user.dto';
+import { UserMapper } from './mappers/user.mapper';
 
 @Injectable()
 export class UsersService {
@@ -17,15 +18,20 @@ export class UsersService {
     return createdUser;
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.usersRepository.find();
+  async findAll(): Promise<UserDto[]> {
+    const users = await this.usersRepository.find();
+    return users.map(UserMapper.toUserDto);
   }
 
-  async findOne(id: number): Promise<User | null> {
-    return await this.usersRepository.findOne({ where: { id } });
+  async findOne(id: number): Promise<UserDto | null> {
+    const user = await this.usersRepository.findOne({ where: { id } });
+    if (user) {
+      return UserMapper.toUserDto(user);
+    }
+    return null;
   }
 
-  async update(id: number, data: UpdateUserDto): Promise<User | null> {
+  async update(id: number, data: UpdateUserDto): Promise<UserDto | null> {
     const user = await this.findOne(id);
     if (user) {
       user.name = data.name;
