@@ -1,14 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from 'src/users/services/users.service';
 import { PageOptionsDto } from 'src/common/dtos/page-options.dto';
 import { PageDto } from 'src/common/dtos/page.dto';
 import { PageMetaDto } from 'src/common/dtos/page-meta.dto';
-import { SendMessageDto } from './dtos/send-message.dto';
-import { Message } from './entities/message.entity';
-import { MessageDto } from './dtos/message.dto';
-import { MessageMapper } from './mappers/message.mapper';
+import { SendMessageDto } from '../dtos/send-message.dto';
+import { Message } from '../entities/message.entity';
+import { MessageDto } from '../dtos/message.dto';
+import { MessageMapper } from '../mappers/message.mapper';
+import { MessageAttachmentDto } from '../dtos/message-attachment.dto';
 
 @Injectable()
 export class MessagesService {
@@ -56,7 +57,10 @@ export class MessagesService {
     return new PageDto(paginatedMessages, pageMetaDto);
   }
 
-  async sendMessage({ fromId, toId, text }: SendMessageDto): Promise<void> {
+  async sendMessage(
+    { fromId, toId, text }: SendMessageDto,
+    attachment?: MessageAttachmentDto,
+  ): Promise<void> {
     const fromUser = await this.usersService.findOne(fromId);
 
     if (!fromUser) {
@@ -72,6 +76,8 @@ export class MessagesService {
       fromId,
       toId,
       text,
+      fileUrl: attachment?.fileUrl,
+      fileName: attachment?.fileName,
     });
   }
 }

@@ -10,7 +10,9 @@ import { MessagesController } from './messages/messages.controller';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: config.database.host,

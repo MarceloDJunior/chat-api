@@ -26,4 +26,10 @@ export class Message extends BaseEntity {
 
   @Column({ default: false })
   read?: boolean;
+
+  @Column({ default: null })
+  fileUrl?: string;
+
+  @Column({ default: null })
+  fileName?: string;
 }
