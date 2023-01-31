@@ -7,8 +7,10 @@ import {
   Post,
   Query,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
@@ -27,6 +29,7 @@ export class MessagesController {
     private fileUploadService: FileUploadService,
   ) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Get(':user1/:user2')
   @ApiPaginatedResponse(MessageDto)
   async getMessages(
@@ -37,6 +40,7 @@ export class MessagesController {
     return await this.messagesService.getMessages(user1, user2, pageOptionsDto);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Post('send')
   @UseInterceptors(FileInterceptor('file'))
   @ApiOkResponse()

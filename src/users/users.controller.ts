@@ -9,7 +9,9 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBadRequestResponse,
   ApiNoContentResponse,
@@ -33,12 +35,14 @@ export class UsersController {
     this.usersService.create(body);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   @ApiOkResponse({ type: UserDto })
   async findAll(): Promise<UserDto[]> {
     return await this.usersService.findAll();
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   @ApiOkResponse({ type: UserDto })
   @ApiNotFoundResponse({ description: 'User not found' })
@@ -50,6 +54,7 @@ export class UsersController {
     throw new NotFoundException();
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Put(':id')
   @ApiOkResponse({ type: UserDto })
   @ApiNotFoundResponse({ description: 'User not found' })
@@ -64,6 +69,7 @@ export class UsersController {
     throw new NotFoundException();
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   @ApiNotFoundResponse({ description: 'User not found' })
   async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {

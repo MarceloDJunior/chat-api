@@ -15,4 +15,8 @@ export const config = {
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
     bucketName: process.env.AWS_BUCKET_NAME as string,
   },
+  auth0: {
+    audience: process.env.AUTH0_AUDIENCE as string,
+    issuerUrl: process.env.AUTH0_ISSUER_URL as string,
+  },
 };

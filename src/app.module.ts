@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { UsersController } from './users/users.controller';
 import { MessagesModule } from './messages/messages.module';
 import { MessagesController } from './messages/messages.controller';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { MessagesController } from './messages/messages.controller';
     }),
     UsersModule,
     MessagesModule,
+    AuthModule,
   ],
 })
 export class AppModule implements NestModule {
