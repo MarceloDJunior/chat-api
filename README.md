@@ -24,7 +24,7 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Chat API - An API created for study purposes. More details to be added soon.
 
 ## Installation
 
