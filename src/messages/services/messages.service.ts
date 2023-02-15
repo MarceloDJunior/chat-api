@@ -1,15 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UsersService } from 'src/users/services/users.service';
-import { PageOptionsDto } from 'src/common/dtos/page-options.dto';
-import { PageDto } from 'src/common/dtos/page.dto';
-import { PageMetaDto } from 'src/common/dtos/page-meta.dto';
-import { SendMessageDto } from '../dtos/send-message.dto';
-import { Message } from '../entities/message.entity';
-import { MessageDto } from '../dtos/message.dto';
-import { MessageMapper } from '../mappers/message.mapper';
-import { MessageAttachmentDto } from '../dtos/message-attachment.dto';
+import { UsersService } from '@/users/services/users.service';
+import { PageOptionsDto } from '@/common/dtos/page-options.dto';
+import { PageDto } from '@/common/dtos/page.dto';
+import { PageMetaDto } from '@/common/dtos/page-meta.dto';
+import { SendMessageDto } from '@/messages/dtos/send-message.dto';
+import { Message } from '@/messages/entities/message.entity';
+import { MessageDto } from '@/messages/dtos/message.dto';
+import { MessageMapper } from '@/messages/mappers/message.mapper';
+import { MessageAttachmentDto } from '@/messages/dtos/message-attachment.dto';
 
 @Injectable()
 export class MessagesService {

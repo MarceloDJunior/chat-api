@@ -1,5 +1,5 @@
-import { MessageDto } from '../dtos/message.dto';
-import { Message } from '../entities/message.entity';
+import { MessageDto } from '@/messages/dtos/message.dto';
+import { Message } from '@/messages/entities/message.entity';
 
 export class MessageMapper {
   static toMessageDto(message: Message): MessageDto {

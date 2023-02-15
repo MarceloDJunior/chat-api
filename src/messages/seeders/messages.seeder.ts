@@ -2,7 +2,7 @@ import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { Seeder } from 'nestjs-seeder';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Message } from '../entities/message.entity';
+import { Message } from '@/messages/entities/message.entity';
 
 @Injectable()
 export class MessagesSeeder implements Seeder {
