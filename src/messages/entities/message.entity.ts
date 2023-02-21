@@ -1,4 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
 import { BaseEntity } from '@/common/entities/base-entity';
 import { User } from '@/users/entities/user.entity';
 
@@ -21,7 +27,7 @@ export class Message extends BaseEntity {
   @Column()
   text: string;
 
-  @Column({ default: new Date() })
+  @CreateDateColumn()
   dateTime: Date;
 
   @Column({ default: false })

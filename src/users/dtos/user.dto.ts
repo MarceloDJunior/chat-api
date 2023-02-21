@@ -8,5 +8,8 @@ export class UserDto {
   name: string;
 
   @ApiProperty()
+  picture?: string;
+
+  @ApiProperty()
   email: string;
 }

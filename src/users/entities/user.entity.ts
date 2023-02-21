@@ -10,8 +10,11 @@ export class User extends BaseEntity {
   @Column()
   email: string;
 
+  @Column({ default: null })
+  picture?: string;
+
   @Column()
-  password: string;
+  auth0Id: string;
 
   @OneToMany(() => Message, (messages) => messages.fromId)
   messagesFrom: Message[];

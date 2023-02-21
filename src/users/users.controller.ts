@@ -27,11 +27,19 @@ import { UserDto } from './dtos/user.dto';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
+  @Post('/auth0-login')
+  @HttpCode(200)
+  @ApiNoContentResponse({ description: 'Created successfully' })
+  @ApiBadRequestResponse({ description: 'Validation errors' })
+  auth0Login(@Body() body: CreateUserDto): void {
+    this.usersService.createOrUpdate(body);
+  }
+
   @Post()
   @HttpCode(204)
   @ApiNoContentResponse({ description: 'Created successfully' })
   @ApiBadRequestResponse({ description: 'Validation errors' })
-  create(@Body() body: CreateUserDto): void {
+  createOrUpdateUser(@Body() body: CreateUserDto): void {
     this.usersService.create(body);
   }
 

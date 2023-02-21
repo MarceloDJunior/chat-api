@@ -15,12 +15,12 @@ export class UsersSeeder implements Seeder {
       {
         name: 'User 1',
         email: 'user1@test.com',
-        password: 'Password123',
+        auth0Id: 'fdkopsfkdjaiodjsij37634rte8ijdioaso',
       },
       {
         name: 'User 2',
         email: 'user2@test.com',
-        password: 'Password123',
+        auth0Id: 'jfiodgfhdugdoisjr3824t6yfbdyg2368d',
       },
     ]);
   }
