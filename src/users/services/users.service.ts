@@ -28,7 +28,7 @@ export class UsersService {
     return users.map(UserMapper.toUserDto);
   }
 
-  async findOne(id: number): Promise<UserDto | null> {
+  async findById(id: number): Promise<UserDto | null> {
     const user = await this.usersRepository.findOne({ where: { id } });
     if (user) {
       return UserMapper.toUserDto(user);
@@ -36,8 +36,16 @@ export class UsersService {
     return null;
   }
 
+  async findByAuthId(auth0Id: string): Promise<UserDto | null> {
+    const user = await this.usersRepository.findOne({ where: { auth0Id } });
+    if (user) {
+      return UserMapper.toUserDto(user);
+    }
+    return null;
+  }
+
   async update(id: number, data: UpdateUserDto): Promise<UserDto | null> {
-    const user = await this.findOne(id);
+    const user = await this.findById(id);
     if (user) {
       user.name = data.name;
       user.picture = data.picture;

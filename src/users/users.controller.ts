@@ -10,6 +10,7 @@ import {
   Post,
   Put,
   UseGuards,
+  Headers,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -18,6 +19,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
 } from '@nestjs/swagger';
+import { AuthService } from '@/auth/auth.service';
 import { CreateUserDto } from '@/users/dtos/create-user.dto';
 import { UpdateUserDto } from '@/users/dtos/update-user.dto';
 import { UsersService } from '@/users/services/users.service';
@@ -25,7 +27,10 @@ import { UserDto } from './dtos/user.dto';
 
 @Controller('users')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Post('/auth0-login')
   @HttpCode(200)
@@ -44,6 +49,20 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard('jwt'))
+  @Get('me')
+  @ApiOkResponse({ type: UserDto })
+  @ApiNotFoundResponse({ description: 'User not found' })
+  async me(@Headers() headers: Record<string, string>): Promise<UserDto> {
+    const accessToken = this.extractAccessTokenFromHeaders(headers);
+    const sub = this.authService.getSubFromAccessToken(accessToken);
+    const user = await this.usersService.findByAuthId(sub);
+    if (user) {
+      return user;
+    }
+    throw new NotFoundException();
+  }
+
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   @ApiOkResponse({ type: UserDto })
   async findAll(): Promise<UserDto[]> {
@@ -55,7 +74,7 @@ export class UsersController {
   @ApiOkResponse({ type: UserDto })
   @ApiNotFoundResponse({ description: 'User not found' })
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<UserDto> {
-    const user = await this.usersService.findOne(id);
+    const user = await this.usersService.findById(id);
     if (user) {
       return user;
     }
@@ -81,10 +100,20 @@ export class UsersController {
   @Delete(':id')
   @ApiNotFoundResponse({ description: 'User not found' })
   async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    const user = await this.usersService.findOne(id);
+    const user = await this.usersService.findById(id);
     if (user) {
       return await this.usersService.remove(id);
     }
     throw new NotFoundException();
+  }
+
+  private extractAccessTokenFromHeaders(
+    headers: Record<string, string>,
+  ): string {
+    const [, accessToken] = headers.authorization.split(' ');
+    if (accessToken) {
+      return accessToken;
+    }
+    throw new Error('No token found');
   }
 }

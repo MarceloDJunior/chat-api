@@ -61,13 +61,13 @@ export class MessagesService {
     { fromId, toId, text }: SendMessageDto,
     attachment?: MessageAttachmentDto,
   ): Promise<void> {
-    const fromUser = await this.usersService.findOne(fromId);
+    const fromUser = await this.usersService.findById(fromId);
 
     if (!fromUser) {
       throw new NotFoundException('from user not found');
     }
 
-    const toUser = await this.usersService.findOne(toId);
+    const toUser = await this.usersService.findById(toId);
     if (!toUser) {
       throw new NotFoundException('to user not found');
     }

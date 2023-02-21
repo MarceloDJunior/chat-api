@@ -19,4 +19,7 @@ export const config = {
     audience: process.env.AUTH0_AUDIENCE as string,
     issuerUrl: process.env.AUTH0_ISSUER_URL as string,
   },
+  jwt: {
+    secret: process.env.JWT_SECRET as string,
+  },
 };
