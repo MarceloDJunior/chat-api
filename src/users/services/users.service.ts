@@ -6,11 +6,13 @@ import { UpdateUserDto } from '@/users/dtos/update-user.dto';
 import { User as UserModel } from '@/users/entities/user.entity';
 import { UserDto } from '@/users/dtos/user.dto';
 import { UserMapper } from '@/users/mappers/user.mapper';
+import { AuthService } from '@/auth/auth.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(UserModel) private usersRepository: Repository<UserModel>,
+    private readonly authService: AuthService,
   ) {}
 
   async create(data: CreateUserDto): Promise<UserDto> {
@@ -72,5 +74,17 @@ export class UsersService {
     }
     const createdUser = await this.create(user);
     return createdUser;
+  }
+
+  async getCurrentUser(
+    headers: Record<string, string>,
+  ): Promise<UserDto | null> {
+    const accessToken = this.authService.extractAccessTokenFromHeaders(headers);
+    const sub = this.authService.getSubFromAccessToken(accessToken);
+    const user = await this.findByAuthId(sub);
+    if (user) {
+      return user;
+    }
+    return null;
   }
 }

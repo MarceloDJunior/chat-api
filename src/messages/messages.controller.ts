@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
@@ -21,23 +23,33 @@ import { MessageDto } from './dtos/message.dto';
 import { SendMessageDto } from './dtos/send-message.dto';
 import { FileUploadService } from './services/file-upload.service';
 import { MessagesService } from './services/messages.service';
+import { UsersService } from '@/users/services/users.service';
 
 @Controller('messages')
 export class MessagesController {
   constructor(
-    private messagesService: MessagesService,
-    private fileUploadService: FileUploadService,
+    private readonly messagesService: MessagesService,
+    private readonly fileUploadService: FileUploadService,
+    private readonly userService: UsersService,
   ) {}
 
   @UseGuards(AuthGuard('jwt'))
-  @Get(':user1/:user2')
+  @Get(':userId')
   @ApiPaginatedResponse(MessageDto)
   async getMessages(
-    @Param('user1', ParseIntPipe) user1: number,
-    @Param('user2', ParseIntPipe) user2: number,
+    @Param('userId', ParseIntPipe) userId: number,
     @Query() pageOptionsDto: PageOptionsDto,
+    @Headers() headers: Record<string, string>,
   ): Promise<PageDto<MessageDto>> {
-    return await this.messagesService.getMessages(user1, user2, pageOptionsDto);
+    const currentUser = await this.userService.getCurrentUser(headers);
+    if (currentUser) {
+      return await this.messagesService.getMessages(
+        currentUser.id,
+        userId,
+        pageOptionsDto,
+      );
+    }
+    throw new NotFoundException();
   }
 
   @UseGuards(AuthGuard('jwt'))

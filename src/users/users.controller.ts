@@ -53,9 +53,7 @@ export class UsersController {
   @ApiOkResponse({ type: UserDto })
   @ApiNotFoundResponse({ description: 'User not found' })
   async me(@Headers() headers: Record<string, string>): Promise<UserDto> {
-    const accessToken = this.extractAccessTokenFromHeaders(headers);
-    const sub = this.authService.getSubFromAccessToken(accessToken);
-    const user = await this.usersService.findByAuthId(sub);
+    const user = await this.usersService.getCurrentUser(headers);
     if (user) {
       return user;
     }
@@ -63,10 +61,17 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Get()
+  @Get('contacts')
   @ApiOkResponse({ type: UserDto })
-  async findAll(): Promise<UserDto[]> {
-    return await this.usersService.findAll();
+  async myContacts(
+    @Headers() headers: Record<string, string>,
+  ): Promise<UserDto[]> {
+    const currentUser = await this.usersService.getCurrentUser(headers);
+    if (!currentUser) {
+      throw new NotFoundException();
+    }
+    const users = await this.usersService.findAll();
+    return users.filter((user) => user.id !== currentUser.id);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -105,15 +110,5 @@ export class UsersController {
       return await this.usersService.remove(id);
     }
     throw new NotFoundException();
-  }
-
-  private extractAccessTokenFromHeaders(
-    headers: Record<string, string>,
-  ): string {
-    const [, accessToken] = headers.authorization.split(' ');
-    if (accessToken) {
-      return accessToken;
-    }
-    throw new Error('No token found');
   }
 }

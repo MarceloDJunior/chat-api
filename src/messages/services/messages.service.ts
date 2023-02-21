@@ -27,17 +27,24 @@ export class MessagesService {
       where: [
         {
           from: {
-            id: In([user1, user2]),
+            id: user1,
+          },
+          to: {
+            id: user2,
           },
         },
         {
           to: {
-            id: In([user1, user2]),
+            id: user1,
+          },
+          from: {
+            id: user2,
           },
         },
       ],
       order: {
         dateTime: pageOptionsDto.order,
+        id: pageOptionsDto.order,
       },
       relations: {
         from: true,
