@@ -19,7 +19,6 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
 } from '@nestjs/swagger';
-import { AuthService } from '@/auth/auth.service';
 import { CreateUserDto } from '@/users/dtos/create-user.dto';
 import { UpdateUserDto } from '@/users/dtos/update-user.dto';
 import { UsersService } from '@/users/services/users.service';
@@ -27,10 +26,7 @@ import { UserDto } from './dtos/user.dto';
 
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Post('/auth0-login')
   @HttpCode(200)
