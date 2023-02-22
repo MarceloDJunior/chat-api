@@ -53,7 +53,7 @@ export class UsersController {
   @ApiOkResponse({ type: UserDto })
   @ApiNotFoundResponse({ description: 'User not found' })
   async me(@Headers() headers: Record<string, string>): Promise<UserDto> {
-    const user = await this.usersService.getCurrentUser(headers);
+    const user = await this.usersService.getUserFromAuthHeaders(headers);
     if (user) {
       return user;
     }
@@ -66,7 +66,7 @@ export class UsersController {
   async myContacts(
     @Headers() headers: Record<string, string>,
   ): Promise<UserDto[]> {
-    const currentUser = await this.usersService.getCurrentUser(headers);
+    const currentUser = await this.usersService.getUserFromAuthHeaders(headers);
     if (!currentUser) {
       throw new NotFoundException();
     }

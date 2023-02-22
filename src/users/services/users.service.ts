@@ -76,15 +76,19 @@ export class UsersService {
     return createdUser;
   }
 
-  async getCurrentUser(
-    headers: Record<string, string>,
-  ): Promise<UserDto | null> {
-    const accessToken = this.authService.extractAccessTokenFromHeaders(headers);
+  async getUserFromAccessToken(accessToken: string): Promise<UserDto | null> {
     const sub = this.authService.getSubFromAccessToken(accessToken);
     const user = await this.findByAuthId(sub);
     if (user) {
       return user;
     }
     return null;
+  }
+
+  async getUserFromAuthHeaders(
+    headers: Record<string, string>,
+  ): Promise<UserDto | null> {
+    const accessToken = this.authService.extractAccessTokenFromHeaders(headers);
+    return this.getUserFromAccessToken(accessToken);
   }
 }

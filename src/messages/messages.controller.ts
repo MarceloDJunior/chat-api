@@ -41,7 +41,7 @@ export class MessagesController {
     @Query() pageOptionsDto: PageOptionsDto,
     @Headers() headers: Record<string, string>,
   ): Promise<PageDto<MessageDto>> {
-    const currentUser = await this.userService.getCurrentUser(headers);
+    const currentUser = await this.userService.getUserFromAuthHeaders(headers);
     if (currentUser) {
       return await this.messagesService.getMessages(
         currentUser.id,

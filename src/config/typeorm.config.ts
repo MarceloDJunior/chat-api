@@ -13,7 +13,7 @@ export class TypeOrmConfig {
       autoLoadEntities: true,
       migrations: [__dirname + '/../migrations/*{.ts,.js}'],
       synchronize: true,
-      logging: true,
+      logging: false,
     };
   }
 }
