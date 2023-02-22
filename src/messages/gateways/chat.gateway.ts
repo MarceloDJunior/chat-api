@@ -55,12 +55,14 @@ export class ChatGateway
 
   private sendMessageToDestination(messageJson: string) {
     const message: Message = JSON.parse(messageJson);
-    const clientId = Object.keys(clientsMap).find(
+    const clientIds = Object.keys(clientsMap).filter(
       (key) => clientsMap[key] === message.to.id,
     );
-    if (clientId) {
-      this.server.sockets.to(clientId).emit('messageReceived', messageJson);
-      console.log(`Sent message to ${clientId}`);
+    if (clientIds) {
+      clientIds.forEach((clientId) => {
+        this.server.sockets.to(clientId).emit('messageReceived', messageJson);
+        console.log(`Sent message to ${clientId}`);
+      });
     }
   }
 }
