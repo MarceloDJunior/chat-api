@@ -38,6 +38,7 @@ export class ChatGateway
   handleDisconnect(client: Socket) {
     console.log(`Disconnected: ${client.id}`);
     delete clientsMap[client.id];
+    this.notifyConnectedClients();
   }
 
   async handleConnection(client: Socket) {
@@ -47,22 +48,48 @@ export class ChatGateway
       if (user) {
         clientsMap[client.id] = user.id;
         console.log(`Connected ${client.id}`);
+        this.notifyConnectedClients();
       }
     } catch (err) {
       console.error(err);
     }
   }
 
+  private notifyConnectedClients() {
+    const connectedUsers = this.getConnectedUserIds();
+    const payload = JSON.stringify(connectedUsers);
+    this.server.sockets
+      .to(this.getConnectedSocketClientIds())
+      .emit('connectedUsers', payload);
+  }
+
   private sendMessageToDestination(messageJson: string) {
     const message: Message = JSON.parse(messageJson);
-    const clientIds = Object.keys(clientsMap).filter(
-      (key) => clientsMap[key] === message.to.id,
-    );
+    const clientIds = this.getSocketClientIdsByUserId(message.to.id);
     if (clientIds) {
       clientIds.forEach((clientId) => {
         this.server.sockets.to(clientId).emit('messageReceived', messageJson);
         console.log(`Sent message to ${clientId}`);
       });
     }
+  }
+
+  private getSocketClientIdsByUserId(userId: number): Array<string> {
+    // Client Id is the key of the userId in the clientsMap
+    return this.getConnectedSocketClientIds().filter(
+      (clientId) => clientsMap[clientId] === userId,
+    );
+  }
+
+  private getConnectedSocketClientIds(): Array<string> {
+    return Object.keys(clientsMap);
+  }
+
+  private getConnectedUserIds(): Array<number> {
+    return this.removeDuplicates(Object.values(clientsMap));
+  }
+
+  private removeDuplicates<T = any>(array: Array<T>): Array<T> {
+    return [...new Set(array)];
   }
 }

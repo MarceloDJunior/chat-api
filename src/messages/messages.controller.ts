@@ -59,7 +59,7 @@ export class MessagesController {
   async send(
     @Body() body: SendMessageDto,
     @UploadedFile() file: Express.Multer.File,
-  ): Promise<void> {
+  ): Promise<MessageDto> {
     let attachment: MessageAttachmentDto | undefined;
     if (file) {
       const fileName = file.originalname;

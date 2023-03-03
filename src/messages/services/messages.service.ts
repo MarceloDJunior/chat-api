@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from '@/users/services/users.service';
 import { PageOptionsDto } from '@/common/dtos/page-options.dto';
@@ -65,9 +65,10 @@ export class MessagesService {
   }
 
   async sendMessage(
-    { fromId, toId, text }: SendMessageDto,
+    message: SendMessageDto,
     attachment?: MessageAttachmentDto,
-  ): Promise<void> {
+  ): Promise<MessageDto> {
+    const { fromId, toId, text } = message;
     const fromUser = await this.usersService.findById(fromId);
 
     if (!fromUser) {
@@ -79,12 +80,17 @@ export class MessagesService {
       throw new NotFoundException('to user not found');
     }
 
-    await this.messagesRepository.insert({
+    const insertedMessage = await this.messagesRepository.save({
       fromId,
       toId,
       text,
       fileUrl: attachment?.fileUrl,
       fileName: attachment?.fileName,
     });
+
+    const messageDto = MessageMapper.toMessageDto(insertedMessage);
+    messageDto.from = fromUser;
+    messageDto.to = toUser;
+    return messageDto;
   }
 }
