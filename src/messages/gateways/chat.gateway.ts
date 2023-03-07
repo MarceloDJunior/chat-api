@@ -31,6 +31,13 @@ export class ChatGateway
     this.sendMessageToDestination(payload);
   }
 
+  @SubscribeMessage('messagesRead')
+  async handleMessagesRead(client: Socket, payload: string): Promise<void> {
+    const fromId = clientsMap[client.id];
+    const destinationIds = this.getSocketClientIdsByUserId(Number(payload));
+    this.server.sockets.to(destinationIds).emit('messagesRead', fromId);
+  }
+
   afterInit(server: Server) {
     console.log('Websocket is running', server);
   }

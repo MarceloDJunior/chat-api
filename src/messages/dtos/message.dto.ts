@@ -16,4 +16,7 @@ export class MessageDto {
 
   @ApiProperty()
   dateTime: Date;
+
+  @ApiProperty()
+  read: boolean;
 }

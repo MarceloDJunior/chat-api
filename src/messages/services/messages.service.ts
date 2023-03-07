@@ -26,20 +26,12 @@ export class MessagesService {
     const [messages, itemCount] = await this.messagesRepository.findAndCount({
       where: [
         {
-          from: {
-            id: user1,
-          },
-          to: {
-            id: user2,
-          },
+          fromId: user1,
+          toId: user2,
         },
         {
-          to: {
-            id: user1,
-          },
-          from: {
-            id: user2,
-          },
+          toId: user1,
+          fromId: user2,
         },
       ],
       order: {
@@ -92,5 +84,9 @@ export class MessagesService {
     messageDto.from = fromUser;
     messageDto.to = toUser;
     return messageDto;
+  }
+
+  async updateRead(fromId: number, toId: number) {
+    await this.messagesRepository.update({ fromId, toId }, { read: true });
   }
 }

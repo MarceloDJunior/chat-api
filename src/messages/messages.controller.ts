@@ -74,4 +74,17 @@ export class MessagesController {
     }
     return await this.messagesService.sendMessage(body, attachment);
   }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get(':contactId/update-read')
+  @ApiOkResponse()
+  async updateReads(
+    @Param('contactId', ParseIntPipe) contactId: number,
+    @Headers() headers: Record<string, string>,
+  ): Promise<void> {
+    const currentUser = await this.userService.getUserFromAuthHeaders(headers);
+    if (currentUser) {
+      await this.messagesService.updateRead(contactId, currentUser.id);
+    }
+  }
 }

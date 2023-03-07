@@ -17,6 +17,7 @@ export class MessageMapper {
         email: message.to?.email,
         name: message.to?.name,
       },
+      read: message.read ?? false,
     };
   }
 }
