@@ -1,0 +1,22 @@
+version: "3"
+services:
+  api:
+    build: .
+    ports:
+      - 3000:3000 # api port
+      - 80:80 # websocket port
+    depends_on:
+      - database
+    links:
+      - database
+    environment:
+      DATABASE_HOST: database
+  database:
+    image: postgres:14.7-alpine
+    ports:
+      - ${DATABASE_PORT}:${DATABASE_PORT}
+    restart: always
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}

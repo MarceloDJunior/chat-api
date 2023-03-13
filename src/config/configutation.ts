@@ -7,7 +7,7 @@ export const config = {
     port: parseInt(process.env.DATABASE_PORT ?? ''),
     username: process.env.DATABASE_USER as string,
     password: process.env.DATABASE_PASSWORD as string,
-    name: 'chat-api',
+    name: process.env.DATABASE_NAME as string,
   },
   aws: {
     region: process.env.AWS_REGION as string,
