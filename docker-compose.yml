@@ -1,7 +1,7 @@
 version: "3"
 services:
   api:
-    build: .
+    build: ./docker/${ENV}/
     ports:
       - 3000:3000 # api port
       - 80:80 # websocket port
@@ -14,7 +14,7 @@ services:
   database:
     image: postgres:14.7-alpine
     ports:
-      - ${DATABASE_PORT}:${DATABASE_PORT}
+      - 5433:${DATABASE_PORT}
     restart: always
     environment:
       POSTGRES_USER: ${DATABASE_USER}
