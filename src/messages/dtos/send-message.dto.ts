@@ -15,6 +15,12 @@ export class SendMessageDto {
   toId: number;
 
   @ApiProperty({
+    description: 'Message date',
+  })
+  @IsNotEmpty()
+  dateTime: Date;
+
+  @ApiProperty({
     description: 'The message body',
   })
   @IsNotEmpty()

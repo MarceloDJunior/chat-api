@@ -76,6 +76,7 @@ export class MessagesService {
       fromId,
       toId,
       text,
+      dateTime: message.dateTime,
       fileUrl: attachment?.fileUrl,
       fileName: attachment?.fileName,
     });
@@ -88,5 +89,34 @@ export class MessagesService {
 
   async updateRead(fromId: number, toId: number) {
     await this.messagesRepository.update({ fromId, toId }, { read: true });
+  }
+
+  async getLastMessage(
+    currentUserId: number,
+    destinationId: number,
+  ): Promise<MessageDto | null> {
+    const lastMessage = await this.messagesRepository.findOne({
+      where: [
+        {
+          fromId: currentUserId,
+          toId: destinationId,
+        },
+        {
+          toId: currentUserId,
+          fromId: destinationId,
+        },
+      ],
+      order: {
+        dateTime: 'DESC',
+      },
+      relations: {
+        from: true,
+        to: true,
+      },
+    });
+    if (lastMessage) {
+      return MessageMapper.toMessageDto(lastMessage);
+    }
+    return null;
   }
 }
