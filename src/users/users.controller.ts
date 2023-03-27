@@ -11,6 +11,8 @@ import {
   Put,
   UseGuards,
   Headers,
+  UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -24,6 +26,7 @@ import { CreateUserDto } from '@/users/dtos/create-user.dto';
 import { UpdateUserDto } from '@/users/dtos/update-user.dto';
 import { UsersService } from '@/users/services/users.service';
 import { UserDto } from './dtos/user.dto';
+import { UserAlreadyExistsError } from './errors/user-already-exists';
 
 @Controller('users')
 export class UsersController {
@@ -36,16 +39,23 @@ export class UsersController {
   @HttpCode(200)
   @ApiNoContentResponse({ description: 'Created successfully' })
   @ApiBadRequestResponse({ description: 'Validation errors' })
-  auth0Login(@Body() body: CreateUserDto): void {
-    this.usersService.createOrUpdate(body);
+  async auth0Login(@Body() body: CreateUserDto): Promise<void> {
+    await this.usersService.createOrUpdate(body);
   }
 
   @Post()
   @HttpCode(204)
   @ApiNoContentResponse({ description: 'Created successfully' })
   @ApiBadRequestResponse({ description: 'Validation errors' })
-  createOrUpdateUser(@Body() body: CreateUserDto): void {
-    this.usersService.create(body);
+  async createOrUpdateUser(@Body() body: CreateUserDto): Promise<void> {
+    try {
+      await this.usersService.create(body);
+    } catch (error) {
+      if (error instanceof UserAlreadyExistsError) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
+    }
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -57,7 +67,7 @@ export class UsersController {
     if (user) {
       return user;
     }
-    throw new NotFoundException();
+    throw new UnauthorizedException();
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -71,29 +81,7 @@ export class UsersController {
       throw new NotFoundException();
     }
     const users = await this.usersService.findAll();
-    for (const user of users) {
-      const lastMessage = await this.messagesService.getLastMessage(
-        currentUser.id,
-        user.id,
-      );
-      if (lastMessage) {
-        user.lastMessage = lastMessage;
-      }
-    }
-
-    const orderedUsers = users.sort((user1, user2) => {
-      const user1Message = user1.lastMessage?.dateTime.getTime() ?? 0;
-      const user2Message = user2.lastMessage?.dateTime.getTime() ?? 0;
-      if (user1Message > user2Message) {
-        return -1;
-      } else if (user1Message < user2Message) {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
-
-    return orderedUsers.filter((user) => user.id !== currentUser.id);
+    return users.filter((user) => user.id !== currentUser.id);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -105,7 +93,7 @@ export class UsersController {
     if (user) {
       return user;
     }
-    throw new NotFoundException();
+    throw new UnauthorizedException();
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -120,7 +108,7 @@ export class UsersController {
     if (updatedUser) {
       return updatedUser;
     }
-    throw new NotFoundException();
+    throw new UnauthorizedException();
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -131,6 +119,6 @@ export class UsersController {
     if (user) {
       return await this.usersService.remove(id);
     }
-    throw new NotFoundException();
+    throw new UnauthorizedException();
   }
 }

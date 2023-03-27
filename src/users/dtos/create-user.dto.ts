@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
+
 export class CreateUserDto {
   @ApiProperty()
   @IsNotEmpty()
@@ -15,5 +16,6 @@ export class CreateUserDto {
   @ApiProperty({
     description: 'Auth0 sub that will be used as auth0 unique id',
   })
-  sub?: string;
+  @IsNotEmpty()
+  sub: string;
 }

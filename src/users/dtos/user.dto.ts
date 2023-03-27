@@ -13,6 +13,4 @@ export class UserDto {
 
   @ApiProperty()
   email: string;
-
-  lastMessage?: MessageDto;
 }

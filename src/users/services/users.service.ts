@@ -7,6 +7,7 @@ import { User as UserModel } from '@/users/entities/user.entity';
 import { UserDto } from '@/users/dtos/user.dto';
 import { UserMapper } from '@/users/mappers/user.mapper';
 import { AuthService } from '@/auth/auth.service';
+import { UserAlreadyExistsError } from '../errors/user-already-exists';
 
 @Injectable()
 export class UsersService {
@@ -16,6 +17,12 @@ export class UsersService {
   ) {}
 
   async create(data: CreateUserDto): Promise<UserDto> {
+    const existingUser = await this.usersRepository.findOneBy({
+      email: data.email,
+    });
+    if (existingUser) {
+      throw new UserAlreadyExistsError();
+    }
     const createdUser = await this.usersRepository.insert({
       email: data.email,
       name: data.name,
