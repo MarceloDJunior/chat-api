@@ -57,11 +57,12 @@ export class MessagesService {
   }
 
   async sendMessage(
+    currentUserId: number,
     message: SendMessageDto,
     attachment?: MessageAttachmentDto,
   ): Promise<MessageDto> {
-    const { fromId, toId, text } = message;
-    const fromUser = await this.usersService.findById(fromId);
+    const { toId, text } = message;
+    const fromUser = await this.usersService.findById(currentUserId);
 
     if (!fromUser) {
       throw new NotFoundException('from user not found');
@@ -73,7 +74,7 @@ export class MessagesService {
     }
 
     const insertedMessage = await this.messagesRepository.save({
-      fromId,
+      fromId: currentUserId,
       toId,
       text,
       dateTime: message.dateTime,
