@@ -1,4 +1,3 @@
-import { UsersService } from '@/users/services/users.service';
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -8,7 +7,8 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { Message } from '../entities/message.entity';
+import { UsersService } from '@/users/services/users.service';
+import { Message } from '../../messages/entities/message.entity';
 
 const clientsMap: Record<string, number> = {};
 
