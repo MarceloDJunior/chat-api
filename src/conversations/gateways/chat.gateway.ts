@@ -8,7 +8,7 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { UsersService } from '@/users/services/users.service';
-import { Message } from '../../messages/entities/message.entity';
+import { Message } from '@/messages/entities/message.entity';
 
 const clientsMap: Record<string, number> = {};
 

@@ -14,19 +14,19 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiOkResponse } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiPaginatedResponse } from '@/common/decorators/api-paginated-response.decorator';
 import { PageOptionsDto } from '@/common/dtos/page-options.dto';
 import { PageDto } from '@/common/dtos/page.dto';
+import { FileUploadService } from '@/conversations/services/file-upload.service';
+import { MessageDto } from '@/messages/dtos/message.dto';
+import { SendMessageDto } from '@/messages/dtos/send-message.dto';
+import { MessageAttachmentDto } from '@/messages/dtos/message-attachment.dto';
+import { MessagesService } from '@/messages/services/messages.service';
 import { UsersService } from '@/users/services/users.service';
 import { ConversationsService } from './services/conversations.service';
 import { ConversationDto } from './dtos/conversation.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiOkResponse } from '@nestjs/swagger';
-import { SendMessageDto } from '@/messages/dtos/send-message.dto';
-import { MessageDto } from '@/messages/dtos/message.dto';
-import { FileUploadService } from '@/conversations/services/file-upload.service';
-import { MessageAttachmentDto } from '@/messages/dtos/message-attachment.dto';
-import { MessagesService } from '@/messages/services/messages.service';
 
 @Controller('conversations')
 export class ConversationsController {

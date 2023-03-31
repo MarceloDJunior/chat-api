@@ -1,5 +1,5 @@
-import { MessageDto } from '@/messages/dtos/message.dto';
 import { ApiProperty } from '@nestjs/swagger';
+import { MessageDto } from '@/messages/dtos/message.dto';
 
 export class UpdateConversationDto {
   @ApiProperty()

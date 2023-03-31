@@ -12,9 +12,9 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiPaginatedResponse } from '@/common/decorators/api-paginated-response.decorator';
 import { PageOptionsDto } from '@/common/dtos/page-options.dto';
 import { PageDto } from '@/common/dtos/page.dto';
+import { UsersService } from '@/users/services/users.service';
 import { MessageDto } from './dtos/message.dto';
 import { MessagesService } from './services/messages.service';
-import { UsersService } from '@/users/services/users.service';
 
 @Controller('messages')
 export class MessagesController {

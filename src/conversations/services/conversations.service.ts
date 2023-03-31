@@ -1,9 +1,9 @@
+import { Repository } from 'typeorm';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { PageMetaDto } from '@/common/dtos/page-meta.dto';
 import { PageOptionsDto } from '@/common/dtos/page-options.dto';
 import { PageDto } from '@/common/dtos/page.dto';
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { ConversationDto } from '../dtos/conversation.dto';
 import { UpdateConversationDto } from '../dtos/update-conversation.dto';
 import { Conversation } from '../entities/conversation.entity';
