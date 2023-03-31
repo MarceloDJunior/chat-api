@@ -16,6 +16,7 @@ import { UsersService } from '@/users/services/users.service';
 import { MessageDto } from './dtos/message.dto';
 import { MessagesService } from './services/messages.service';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('messages')
 export class MessagesController {
   constructor(
@@ -23,7 +24,6 @@ export class MessagesController {
     private readonly userService: UsersService,
   ) {}
 
-  @UseGuards(AuthGuard('jwt'))
   @Get(':userId')
   @ApiPaginatedResponse(MessageDto)
   async getMessages(

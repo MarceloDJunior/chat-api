@@ -28,6 +28,7 @@ import { UsersService } from '@/users/services/users.service';
 import { ConversationsService } from './services/conversations.service';
 import { ConversationDto } from './dtos/conversation.dto';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('conversations')
 export class ConversationsController {
   constructor(
@@ -37,7 +38,6 @@ export class ConversationsController {
     private readonly fileUploadService: FileUploadService,
   ) {}
 
-  @UseGuards(AuthGuard('jwt'))
   @Get()
   @ApiPaginatedResponse(ConversationDto)
   async getConversations(
@@ -54,7 +54,6 @@ export class ConversationsController {
     throw new NotFoundException();
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Post('send-message')
   @UseInterceptors(FileInterceptor('file'))
   @ApiOkResponse()
@@ -93,7 +92,6 @@ export class ConversationsController {
     return sentMessage;
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Get(':contactId/update-read')
   @ApiOkResponse()
   async updateRead(
