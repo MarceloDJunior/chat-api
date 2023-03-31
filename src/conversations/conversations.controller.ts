@@ -59,7 +59,7 @@ export class ConversationsController {
   @UseInterceptors(FileInterceptor('file'))
   @ApiOkResponse()
   async send(
-    @Body() body: SendMessageDto,
+    @Body() message: SendMessageDto,
     @UploadedFile() file: Express.Multer.File,
     @Headers() headers: Record<string, string>,
   ): Promise<MessageDto> {
@@ -81,13 +81,13 @@ export class ConversationsController {
     }
     const sentMessage = await this.messagesService.sendMessage(
       currentUser.id,
-      body,
+      message,
       attachment,
     );
     this.conversationsService.updateConversation({
       lastMessage: sentMessage,
       user1Id: currentUser.id,
-      user2Id: body.toId,
+      user2Id: message.toId,
       incrementNewMessagesBy: 1,
     });
     return sentMessage;
