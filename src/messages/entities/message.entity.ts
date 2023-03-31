@@ -13,14 +13,14 @@ export class Message extends BaseEntity {
   @Column()
   fromId: number;
 
-  @ManyToOne(() => User, (user) => user.messagesFrom)
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'fromId' })
   from: User;
 
   @Column()
   toId: number;
 
-  @ManyToOne(() => User, (user) => user.messagesTo)
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'toId' })
   to: User;
 

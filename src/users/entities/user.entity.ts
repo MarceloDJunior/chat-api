@@ -15,10 +15,4 @@ export class User extends BaseEntity {
 
   @Column()
   auth0Id: string;
-
-  @OneToMany(() => Message, (messages) => messages.fromId)
-  messagesFrom: Message[];
-
-  @OneToMany(() => Message, (messages) => messages.toId)
-  messagesTo: Message[];
 }

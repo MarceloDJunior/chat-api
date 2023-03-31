@@ -21,7 +21,6 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
 } from '@nestjs/swagger';
-import { MessagesService } from '@/messages/services/messages.service';
 import { CreateUserDto } from '@/users/dtos/create-user.dto';
 import { UpdateUserDto } from '@/users/dtos/update-user.dto';
 import { UsersService } from '@/users/services/users.service';
@@ -30,10 +29,7 @@ import { UserAlreadyExistsError } from './errors/user-already-exists';
 
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly messagesService: MessagesService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Post('/auth0-login')
   @HttpCode(200)
