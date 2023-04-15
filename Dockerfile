@@ -13,4 +13,5 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-RUN npm run dev
+# Creates a "dist" folder with the production build
+RUN npm run build

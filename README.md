@@ -45,6 +45,12 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Mount database and run app in docker container
+
+```bash
+$ docker-compose up --build
+```
+
 ## Test
 
 ```bash

@@ -1,20 +1,18 @@
-version: "3"
+version: '3'
 services:
   api:
-    build: ./docker/${ENV}/
-    ports:
-      - 3000:3000 # api port
-      - 80:80 # websocket port
+    build: .
+    extends:
+      file: docker-compose.${ENV}.yaml
+      service: api
     depends_on:
       - database
     links:
       - database
-    environment:
-      DATABASE_HOST: database
   database:
     image: postgres:14.7-alpine
     ports:
-      - 5433:${DATABASE_PORT}
+      - ${DATABASE_PORT}:5432
     restart: always
     environment:
       POSTGRES_USER: ${DATABASE_USER}

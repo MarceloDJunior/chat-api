@@ -1,0 +1,11 @@
+version: '3'
+services:
+  api:
+    command: npm run dev
+    ports:
+      - 3000:3000 # api port
+      - 80:80 # websocket port
+    volumes:
+      - ./:/usr/src/app
+    environment:
+      DATABASE_HOST: host.docker.internal
