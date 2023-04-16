@@ -1,4 +1,3 @@
-import { MessageDto } from '@/messages/dtos/message.dto';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UserDto {
