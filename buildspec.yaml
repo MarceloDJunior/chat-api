@@ -5,15 +5,15 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws --version
-      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 217970293372.dkr.ecr.us-east-1.amazonaws.com
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO_BASE_URL
   build:
     commands:
       - echo Build started on `date`
       - echo Building docker image...
-      - docker build -t chat-api .
-      - docker tag chat-api:latest 217970293372.dkr.ecr.us-east-1.amazonaws.com/chat-api:latest
+      - docker build -t $ECR_IMAGE_NAME .
+      - docker tag $ECR_IMAGE_NAME:latest $ECR_REPO_BASE_URL/$ECR_IMAGE_NAME:latest
   post_build:
     commands: 
       - echo Build completed on `date`
       - echo Pushing the docker image
-      - docker push 217970293372.dkr.ecr.us-east-1.amazonaws.com/chat-api:latest
+      - docker push $ECR_REPO_BASE_URL/$ECR_IMAGE_NAME:latest
