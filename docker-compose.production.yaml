@@ -1,9 +1,10 @@
 version: '3'
 services:
   api:
+    image: ${DOCKER_IMAGE_URL}
     command: node dist/main.js
     ports:
       - 3000:3000 # api port
       - 80:80 # websocket port
     environment:
-      DATABASE_HOST: host.docker.internal
+      DATABASE_HOST: database
