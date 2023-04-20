@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from '@/app.module';
+import { config } from './config/configutation';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,16 +12,17 @@ async function bootstrap() {
     }),
   );
 
-  const config = new DocumentBuilder()
+  const documentoConfig = new DocumentBuilder()
     .setTitle('Chat API')
     .setDescription('Chat API description')
     .setVersion('1.0')
     .build();
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, documentoConfig);
   SwaggerModule.setup('api', app, document);
 
   app.enableCors();
 
-  await app.listen(3000);
+  const hostname = config.isDev ? '127.0.0.1' : '0.0.0.0';
+  await app.listen(3000, hostname);
 }
 bootstrap();
