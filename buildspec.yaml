@@ -17,3 +17,8 @@ phases:
       - echo Build completed on `date`
       - echo Pushing the docker image
       - docker push $ECR_REPO_BASE_URL/$ECR_IMAGE_NAME:latest
+      - echo Writing image definitions file...
+      - echo '[{"name":"'$ECR_IMAGE_NAME'","imageUri":"'$ECR_REPO_BASE_URL'/'$ECR_IMAGE_NAME':latest"}]' > imagedefinitions.json
+artifacts:
+  files:
+    - imagedefinitions.json
