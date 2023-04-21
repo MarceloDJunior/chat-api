@@ -1,13 +1,5 @@
 version: '3'
 services:
-  api:
-    extends:
-      file: docker-compose.${ENV}.yaml
-      service: api
-    depends_on:
-      - database
-    links:
-      - database
   database:
     image: postgres:14.7-alpine
     ports:
