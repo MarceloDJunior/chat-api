@@ -12,7 +12,7 @@ import { Message } from '@/messages/entities/message.entity';
 
 const clientsMap: Record<string, number> = {};
 
-@WebSocketGateway(80, {
+@WebSocketGateway(5678, {
   cors: {
     origin: '*',
   },
