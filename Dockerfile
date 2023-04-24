@@ -18,3 +18,4 @@ RUN npm run build
 
 EXPOSE 3000
 EXPOSE 80
+EXPOSE 5678
