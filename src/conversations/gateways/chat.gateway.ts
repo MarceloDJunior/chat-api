@@ -17,11 +17,11 @@ const clientsMap: Record<string, number> = {};
   cors: config.isDev
     ? { origin: '*' }
     : {
-        origin: ['https://dru4mwnwwwwon.cloudfront.net/'],
+        origin: ['https://dru4mwnwwwwon.cloudfront.net'],
         methods: ['GET', 'POST', 'UPDATE', 'OPTIONS'],
         credentials: true,
       },
-  transports: ['polling'],
+  transports: ['websocket'],
   allowEIO3: true,
 })
 export class ChatGateway
