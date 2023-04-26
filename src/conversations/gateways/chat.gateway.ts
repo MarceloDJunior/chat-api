@@ -9,13 +9,17 @@ import {
 import { Socket, Server } from 'socket.io';
 import { UsersService } from '@/users/services/users.service';
 import { Message } from '@/messages/entities/message.entity';
+import { config } from '@/config/configutation';
 
 const clientsMap: Record<string, number> = {};
 
 @WebSocketGateway(5678, {
-  cors: {
-    origin: '*',
-  },
+  cors: config.isDev
+    ? undefined
+    : {
+        origin: ['https://dru4mwnwwwwon.cloudfront.net'],
+        methods: ['GET', 'POST'],
+      },
   credentials: true,
   transports: ['websocket'],
   allowEIO3: true,
