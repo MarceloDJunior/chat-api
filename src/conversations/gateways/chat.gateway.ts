@@ -15,13 +15,13 @@ const clientsMap: Record<string, number> = {};
 
 @WebSocketGateway(5678, {
   cors: config.isDev
-    ? undefined
+    ? { origin: '*' }
     : {
         origin: ['https://dru4mwnwwwwon.cloudfront.net'],
         methods: ['GET', 'POST'],
         credentials: true,
       },
-  transports: ['websocket'],
+  transports: ['polling'],
   allowEIO3: true,
 })
 export class ChatGateway
