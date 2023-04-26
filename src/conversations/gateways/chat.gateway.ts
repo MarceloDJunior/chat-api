@@ -16,6 +16,7 @@ const clientsMap: Record<string, number> = {};
   cors: {
     origin: '*',
   },
+  credentials: true,
   transports: ['websocket'],
   allowEIO3: true,
 })
