@@ -19,8 +19,8 @@ const clientsMap: Record<string, number> = {};
     : {
         origin: ['https://dru4mwnwwwwon.cloudfront.net'],
         methods: ['GET', 'POST'],
+        credentials: true,
       },
-  credentials: true,
   transports: ['websocket'],
   allowEIO3: true,
 })
