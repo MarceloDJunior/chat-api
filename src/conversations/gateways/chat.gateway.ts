@@ -17,8 +17,8 @@ const clientsMap: Record<string, number> = {};
   cors: config.isDev
     ? { origin: '*' }
     : {
-        origin: ['https://dru4mwnwwwwon.cloudfront.net'],
-        methods: ['GET', 'POST'],
+        origin: ['https://dru4mwnwwwwon.cloudfront.net/'],
+        methods: ['GET', 'POST', 'UPDATE', 'OPTIONS'],
         credentials: true,
       },
   transports: ['polling'],

@@ -20,11 +20,16 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, documentoConfig);
   SwaggerModule.setup('api', app, document);
 
-  app.enableCors({
-    origin: ['https://dru4mwnwwwwon.cloudfront.net'],
-    methods: ['GET', 'POST'],
-    credentials: true,
-  });
+  let corsOptions;
+  if (!config.isDev) {
+    corsOptions = {
+      origin: ['https://dru4mwnwwwwon.cloudfront.net'],
+      methods: ['GET', 'POST', 'UPDATE', 'OPTIONS'],
+      credentials: true,
+    };
+  }
+
+  app.enableCors(corsOptions);
 
   const hostname = config.isDev ? '127.0.0.1' : '0.0.0.0';
   await app.listen(3000, hostname);
