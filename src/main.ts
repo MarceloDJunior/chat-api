@@ -23,7 +23,7 @@ async function bootstrap() {
   let corsOptions;
   if (!config.isDev) {
     corsOptions = {
-      origin: ['https://dru4mwnwwwwon.cloudfront.net'],
+      origin: ['https://chat-api.link'],
       methods: ['GET', 'POST', 'UPDATE', 'OPTIONS'],
       credentials: true,
     };
