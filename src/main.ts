@@ -31,7 +31,6 @@ async function bootstrap() {
 
   app.enableCors(corsOptions);
 
-  const hostname = config.isDev ? '127.0.0.1' : '0.0.0.0';
-  await app.listen(3000, hostname);
+  await app.listen(3000);
 }
 bootstrap();
