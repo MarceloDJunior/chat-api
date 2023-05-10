@@ -25,7 +25,8 @@
     "migration:run": "npm run typeorm:cli migration:run",
     "migration:revert": "npm run typeorm:cli migration:revert",
     "seed": "npm run build && node dist/seeder",
-    "seed:refresh": "npm run build && node dist/seeder --refresh"
+    "seed:refresh": "npm run build && node dist/seeder --refresh",
+    "deploy": "npm ci && npm run build && npm run start:prod"
   },
   "dependencies": {
     "@nestjs/common": "9.4.0",
