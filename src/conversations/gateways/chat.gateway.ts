@@ -13,11 +13,11 @@ import { config } from '@/config/configutation';
 
 const clientsMap: Record<string, number> = {};
 
-@WebSocketGateway(5678, {
+@WebSocketGateway(config.wsPort, {
   cors: config.isDev
     ? { origin: '*' }
     : {
-        origin: ['https://dru4mwnwwwwon.cloudfront.net'],
+        origin: ['https://chat-api.link'],
         methods: ['GET', 'POST', 'UPDATE', 'OPTIONS'],
         credentials: true,
       },

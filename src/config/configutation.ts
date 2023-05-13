@@ -23,4 +23,6 @@ export const config = {
     secret: process.env.JWT_SECRET as string,
   },
   isDev: process.env.ENV === 'development',
+  httpPort: Number(process.env.HTTP_PORT || 3000),
+  wsPort: Number(process.env.WS_PORT || 5678),
 };
