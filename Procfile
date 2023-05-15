@@ -1,1 +1,1 @@
-web: npm run deploy
+web: sudo npm run deploy
