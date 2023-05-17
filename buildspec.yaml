@@ -3,22 +3,19 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - echo Logging in to Amazon ECR...
-      - aws --version
-      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO_BASE_URL
+      - echo Installing source NPM dependencies...
+      - npm ci
   build:
     commands:
       - echo Build started on `date`
-      - echo Building docker image...
-      - docker build -t $ECR_IMAGE_NAME .
-      - docker tag $ECR_IMAGE_NAME:latest $ECR_REPO_BASE_URL/$ECR_IMAGE_NAME:latest
+      - npm run build
   post_build:
     commands: 
-      - echo Build completed on `date`
-      - echo Pushing the docker image
-      - docker push $ECR_REPO_BASE_URL/$ECR_IMAGE_NAME:latest
-      - echo Writing image definitions file...
-      - echo '[{"name":"'$ECR_IMAGE_NAME'","imageUri":"'$ECR_REPO_BASE_URL'/'$ECR_IMAGE_NAME':latest"}]' > imagedefinitions.json
+      - cp -R node_modules/ dist/node_modules # nodejs needs this
+      - cp Procfile dist/Procfile # EBS needs this
+      - cp package.json dist/package.json # EBS needs this
 artifacts:
   files:
-    - imagedefinitions.json
+    - "**/*"
+  discard-paths: no
+  base-directory: dist
