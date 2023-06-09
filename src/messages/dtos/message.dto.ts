@@ -19,4 +19,10 @@ export class MessageDto {
 
   @ApiProperty()
   read: boolean;
+
+  @ApiProperty()
+  fileUrl: string | null;
+
+  @ApiProperty()
+  fileName: string | null;
 }

@@ -77,7 +77,7 @@ export class MessagesService {
       fromId: currentUserId,
       toId,
       text,
-      dateTime: message.dateTime,
+      dateTime: new Date(message.dateTime),
       fileUrl: attachment?.fileUrl,
       fileName: attachment?.fileName,
     });

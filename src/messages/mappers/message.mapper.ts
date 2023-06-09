@@ -18,6 +18,8 @@ export class MessageMapper {
         name: message.to?.name,
       },
       read: message.read ?? false,
+      fileUrl: message.fileUrl ?? null,
+      fileName: message.fileName ?? null,
     };
   }
 }

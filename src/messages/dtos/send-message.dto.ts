@@ -12,11 +12,10 @@ export class SendMessageDto {
     description: 'Message date',
   })
   @IsNotEmpty()
-  dateTime: Date;
+  dateTime: string;
 
   @ApiProperty({
     description: 'The message body',
   })
-  @IsNotEmpty()
   text: string;
 }

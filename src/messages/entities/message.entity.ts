@@ -34,8 +34,8 @@ export class Message extends BaseEntity {
   read?: boolean;
 
   @Column({ default: null })
-  fileUrl?: string;
+  fileUrl: string;
 
   @Column({ default: null })
-  fileName?: string;
+  fileName: string;
 }
