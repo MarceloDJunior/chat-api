@@ -48,7 +48,7 @@ export class ChatGateway
   }
 
   handleDisconnect(client: Socket) {
-    console.log(`Disconnected: ${client.id}`);
+    console.log(`Websocket client disconnected: ${client.id}`);
     delete clientsMap[client.id];
     this.notifyConnectedClients();
   }
@@ -59,7 +59,7 @@ export class ChatGateway
       const user = await this.usersService.getUserFromAccessToken(accessToken);
       if (user) {
         clientsMap[client.id] = user.id;
-        console.log(`Connected ${client.id}`);
+        console.log(`Websocket client connected: ${client.id}`);
         this.notifyConnectedClients();
       }
     } catch (err) {
@@ -81,7 +81,7 @@ export class ChatGateway
     if (clientIds) {
       clientIds.forEach((clientId) => {
         this.server.sockets.to(clientId).emit('messageReceived', messageJson);
-        console.log(`Sent message to ${clientId}`);
+        console.log(`Websocket sent message to ${clientId}`);
       });
     }
   }

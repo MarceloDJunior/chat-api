@@ -5,16 +5,29 @@ export const loggerMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  const { ip, method, originalUrl } = req;
+  const { ip, method, originalUrl, params } = req;
   const userAgent = req.get('user-agent') || '';
 
-  res.on('finish', () => {
-    const { statusCode } = res;
-    const contentLength = res.get('content-length');
+  let body = '';
+  const oldSend = res.send;
 
-    console.log(
-      `${method} ${originalUrl} ${statusCode} ${contentLength} - ${userAgent} ${ip}`,
-    );
+  res.send = function (data: any): Response {
+    res.emit('send', data);
+    return oldSend.apply(res, [data]);
+  };
+
+  res.on('send', (data: any) => {
+    body = data;
+  });
+
+  res.on('finish', () => {
+    console.log(`${method} ${originalUrl}`, {
+      status: res.statusCode,
+      userAgent,
+      ip,
+      params,
+      responseBody: body,
+    });
   });
 
   next();

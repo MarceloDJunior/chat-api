@@ -5,8 +5,6 @@ import { loggerMiddleware } from './logger.middleware';
 import { TypeOrmConfig } from './config/typeorm.config';
 import { ConversationsModule } from './conversations/conversations.module';
 import { UsersModule } from './users/users.module';
-import { UsersController } from './users/users.controller';
-import { MessagesController } from './messages/messages.controller';
 
 @Module({
   imports: [
@@ -20,8 +18,6 @@ import { MessagesController } from './messages/messages.controller';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(loggerMiddleware)
-      .forRoutes(UsersController, MessagesController);
+    consumer.apply(loggerMiddleware).forRoutes('*');
   }
 }
