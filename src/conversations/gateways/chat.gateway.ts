@@ -10,6 +10,7 @@ import { Socket, Server } from 'socket.io';
 import { UsersService } from '@/users/services/users.service';
 import { Message } from '@/messages/entities/message.entity';
 import { config } from '@/config/configutation';
+import { UserDto } from '@/users/dtos/user.dto';
 
 const clientsMap: Record<string, number> = {};
 
@@ -60,15 +61,22 @@ export class ChatGateway
       if (user) {
         clientsMap[client.id] = user.id;
         console.log(`Websocket client connected: ${client.id}`);
-        this.notifyConnectedClients();
+        await this.notifyConnectedClients();
       }
     } catch (err) {
       console.error(err);
     }
   }
 
-  private notifyConnectedClients() {
-    const connectedUsers = this.getConnectedUserIds();
+  private async notifyConnectedClients() {
+    const connectedUsersIds = this.getConnectedUserIds();
+    const connectedUsers: UserDto[] = [];
+    for (const userId of connectedUsersIds) {
+      const user = await this.usersService.findById(userId);
+      if (user) {
+        connectedUsers.push(user);
+      }
+    }
     const payload = JSON.stringify(connectedUsers);
     this.server.sockets
       .to(this.getConnectedSocketClientIds())
