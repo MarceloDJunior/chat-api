@@ -14,7 +14,6 @@ phases:
       - cp -R node_modules/ dist/node_modules # nodejs needs this
       - cp Procfile dist/Procfile # EBS needs this
       - cp package.json dist/package.json # EBS needs this
-      - cp -R .ebextensions/ dist/.ebextensions # EBS needs this
 artifacts:
   files:
     - "**/*"
