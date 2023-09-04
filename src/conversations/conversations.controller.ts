@@ -9,19 +9,15 @@ import {
   Post,
   Query,
   UnauthorizedException,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOkResponse } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiPaginatedResponse } from '@/common/decorators/api-paginated-response.decorator';
 import { PageOptionsDto } from '@/common/dtos/page-options.dto';
 import { PageDto } from '@/common/dtos/page.dto';
 import { FileUploadService } from '@/conversations/services/file-upload.service';
 import { MessageDto } from '@/messages/dtos/message.dto';
-import { SendMessageDto } from '@/messages/dtos/send-message.dto';
 import { MessageAttachmentDto } from '@/messages/dtos/message-attachment.dto';
 import { MessagesService } from '@/messages/services/messages.service';
 import { UsersService } from '@/users/services/users.service';
@@ -54,12 +50,23 @@ export class ConversationsController {
     throw new NotFoundException();
   }
 
+  @Get('presigned-url/:filename')
+  @ApiOkResponse()
+  async getPresignedUrl(
+    @Headers() headers: Record<string, string>,
+    @Param('filename') filename: string,
+  ): Promise<string> {
+    const currentUser = await this.usersService.getUserFromAuthHeaders(headers);
+    if (currentUser) {
+      return await this.fileUploadService.getPresignedUrl(filename);
+    }
+    throw new NotFoundException();
+  }
+
   @Post('send-message')
-  @UseInterceptors(FileInterceptor('file'))
   @ApiOkResponse()
   async send(
-    @Body() message: SendMessageDto,
-    @UploadedFile() file: Express.Multer.File,
+    @Body() message: MessageDto,
     @Headers() headers: Record<string, string>,
   ): Promise<MessageDto> {
     const currentUser = await this.usersService.getUserFromAuthHeaders(headers);
@@ -67,15 +74,10 @@ export class ConversationsController {
       throw new UnauthorizedException();
     }
     let attachment: MessageAttachmentDto | undefined;
-    if (file) {
-      const fileName = file.originalname;
-      const fileUrl = await this.fileUploadService.uploadFile(
-        file.buffer,
-        fileName,
-      );
+    if (message.fileName && message.fileUrl) {
       attachment = {
-        fileUrl,
-        fileName,
+        fileUrl: message.fileUrl,
+        fileName: message.fileName,
       };
     }
     const sentMessage = await this.messagesService.sendMessage(
@@ -86,7 +88,7 @@ export class ConversationsController {
     this.conversationsService.updateConversation({
       lastMessage: sentMessage,
       user1Id: currentUser.id,
-      user2Id: message.toId,
+      user2Id: message.to.id,
       incrementNewMessagesBy: 1,
     });
     return sentMessage;

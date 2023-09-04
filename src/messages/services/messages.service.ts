@@ -5,7 +5,6 @@ import { UsersService } from '@/users/services/users.service';
 import { PageOptionsDto } from '@/common/dtos/page-options.dto';
 import { PageDto } from '@/common/dtos/page.dto';
 import { PageMetaDto } from '@/common/dtos/page-meta.dto';
-import { SendMessageDto } from '@/messages/dtos/send-message.dto';
 import { Message } from '@/messages/entities/message.entity';
 import { MessageDto } from '@/messages/dtos/message.dto';
 import { MessageMapper } from '@/messages/mappers/message.mapper';
@@ -58,25 +57,24 @@ export class MessagesService {
 
   async sendMessage(
     currentUserId: number,
-    message: SendMessageDto,
+    message: MessageDto,
     attachment?: MessageAttachmentDto,
   ): Promise<MessageDto> {
-    const { toId, text } = message;
     const fromUser = await this.usersService.findById(currentUserId);
 
     if (!fromUser) {
       throw new NotFoundException('from user not found');
     }
 
-    const toUser = await this.usersService.findById(toId);
+    const toUser = await this.usersService.findById(message.to.id);
     if (!toUser) {
       throw new NotFoundException('to user not found');
     }
 
     const insertedMessage = await this.messagesRepository.save({
       fromId: currentUserId,
-      toId,
-      text,
+      toId: message.to.id,
+      text: message.text,
       dateTime: new Date(message.dateTime),
       fileUrl: attachment?.fileUrl,
       fileName: attachment?.fileName,
