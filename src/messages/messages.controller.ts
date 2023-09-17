@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Headers,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Query,
@@ -15,13 +16,16 @@ import { PageDto } from '@/common/dtos/page.dto';
 import { UsersService } from '@/users/services/users.service';
 import { MessageDto } from './dtos/message.dto';
 import { MessagesService } from './services/messages.service';
+import { ApiOkResponse } from '@nestjs/swagger';
+import { FileUploadService } from './services/file-upload.service';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('messages')
 export class MessagesController {
   constructor(
     private readonly messagesService: MessagesService,
-    private readonly userService: UsersService,
+    private readonly usersService: UsersService,
+    private readonly fileUploadService: FileUploadService,
   ) {}
 
   @Get(':userId')
@@ -31,7 +35,7 @@ export class MessagesController {
     @Query() pageOptionsDto: PageOptionsDto,
     @Headers() headers: Record<string, string>,
   ): Promise<PageDto<MessageDto>> {
-    const currentUser = await this.userService.getUserFromAuthHeaders(headers);
+    const currentUser = await this.usersService.getUserFromAuthHeaders(headers);
     if (!currentUser) {
       throw new UnauthorizedException();
     }
@@ -40,5 +44,18 @@ export class MessagesController {
       userId,
       pageOptionsDto,
     );
+  }
+
+  @Get('presigned-url/:filename')
+  @ApiOkResponse()
+  async getPresignedUrl(
+    @Headers() headers: Record<string, string>,
+    @Param('filename') filename: string,
+  ): Promise<string> {
+    const currentUser = await this.usersService.getUserFromAuthHeaders(headers);
+    if (currentUser) {
+      return await this.fileUploadService.getPresignedUrl(filename);
+    }
+    throw new NotFoundException();
   }
 }

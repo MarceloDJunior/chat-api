@@ -16,7 +16,6 @@ import { ApiOkResponse } from '@nestjs/swagger';
 import { ApiPaginatedResponse } from '@/common/decorators/api-paginated-response.decorator';
 import { PageOptionsDto } from '@/common/dtos/page-options.dto';
 import { PageDto } from '@/common/dtos/page.dto';
-import { FileUploadService } from '@/conversations/services/file-upload.service';
 import { MessageDto } from '@/messages/dtos/message.dto';
 import { MessageAttachmentDto } from '@/messages/dtos/message-attachment.dto';
 import { MessagesService } from '@/messages/services/messages.service';
@@ -31,7 +30,6 @@ export class ConversationsController {
     private readonly conversationsService: ConversationsService,
     private readonly messagesService: MessagesService,
     private readonly usersService: UsersService,
-    private readonly fileUploadService: FileUploadService,
   ) {}
 
   @Get()
@@ -46,19 +44,6 @@ export class ConversationsController {
         currentUser.id,
         pageOptionsDto,
       );
-    }
-    throw new NotFoundException();
-  }
-
-  @Get('presigned-url/:filename')
-  @ApiOkResponse()
-  async getPresignedUrl(
-    @Headers() headers: Record<string, string>,
-    @Param('filename') filename: string,
-  ): Promise<string> {
-    const currentUser = await this.usersService.getUserFromAuthHeaders(headers);
-    if (currentUser) {
-      return await this.fileUploadService.getPresignedUrl(filename);
     }
     throw new NotFoundException();
   }

@@ -6,7 +6,6 @@ import { ConversationsController } from './conversations.controller';
 import { Conversation } from './entities/conversation.entity';
 import { ChatGateway } from './gateways/chat.gateway';
 import { ConversationsService } from './services/conversations.service';
-import { FileUploadService } from './services/file-upload.service';
 
 @Module({
   imports: [
@@ -15,7 +14,7 @@ import { FileUploadService } from './services/file-upload.service';
     MessagesModule,
   ],
   controllers: [ConversationsController],
-  providers: [ConversationsService, FileUploadService, ChatGateway],
+  providers: [ConversationsService, ChatGateway],
   exports: [ConversationsService],
 })
 export class ConversationsModule {}
