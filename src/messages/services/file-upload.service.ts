@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import { v4 as uuid } from 'uuid';
-import { config } from '@/config/configutation';
+import { config } from '@/config/configuration';
 
 @Injectable()
 export class FileUploadService {

@@ -1,5 +1,5 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { config } from './configutation';
+import { config } from './configuration';
 
 export class TypeOrmConfig {
   static getConfig(): TypeOrmModuleOptions {

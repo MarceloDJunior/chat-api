@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { config } from './configutation';
+import { config } from './configuration';
 
 export default new DataSource({
   type: 'postgres',

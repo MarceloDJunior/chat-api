@@ -1,7 +1,7 @@
 import { seeder } from 'nestjs-seeder';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { config } from './config/configutation';
+import { config } from './config/configuration';
 import { UsersSeeder } from './users/seeders/users.seeder';
 import { User } from './users/entities/user.entity';
 import { Message } from './messages/entities/message.entity';

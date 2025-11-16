@@ -9,7 +9,7 @@ import {
 import { Socket, Server } from 'socket.io';
 import { UsersService } from '@/users/services/users.service';
 import { Message } from '@/messages/entities/message.entity';
-import { config } from '@/config/configutation';
+import { config } from '@/config/configuration';
 import { UserDto } from '@/users/dtos/user.dto';
 
 const clientsMap: Record<string, number> = {};
