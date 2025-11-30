@@ -14,6 +14,21 @@ import { UserDto } from '@/users/dtos/user.dto';
 
 const clientsMap: Record<string, number> = {};
 
+enum SocketEvent {
+  SEND_MESSAGE = 'sendMessage',
+  MESSAGES_READ = 'messagesRead',
+  MESSAGES_RECEIVED = 'messagesReceived',
+  CONNECTED_USERS = 'connectedUsers',
+  RTC_CONNECTION = 'rtcConnection',
+}
+
+interface RTCConnectionMessage {
+  fromId: number;
+  toId: number;
+  type: 'ice_candidate' | 'offer' | 'answer';
+  data: RTCSessionDescriptionInit | RTCIceCandidate;
+}
+
 @WebSocketGateway(config.wsPort, {
   cors: config.isDev
     ? { origin: '*' }
@@ -32,16 +47,27 @@ export class ChatGateway
 
   @WebSocketServer() server: Server;
 
-  @SubscribeMessage('sendMessage')
+  @SubscribeMessage(SocketEvent.SEND_MESSAGE)
   async handleSendMessage(_client: Socket, payload: string): Promise<void> {
     this.sendMessageToDestination(payload);
   }
 
-  @SubscribeMessage('messagesRead')
+  @SubscribeMessage(SocketEvent.MESSAGES_READ)
   async handleMessagesRead(client: Socket, payload: string): Promise<void> {
     const fromId = clientsMap[client.id];
     const destinationIds = this.getSocketClientIdsByUserId(Number(payload));
-    this.server.sockets.to(destinationIds).emit('messagesRead', fromId);
+    this.server.sockets
+      .to(destinationIds)
+      .emit(SocketEvent.MESSAGES_READ, fromId);
+  }
+
+  @SubscribeMessage(SocketEvent.RTC_CONNECTION)
+  async handleRTCConnection(client: Socket, payload: string): Promise<void> {
+    const message = JSON.parse(payload) as RTCConnectionMessage;
+    const destinationIds = this.getSocketClientIdsByUserId(message.toId);
+    this.server.sockets
+      .to(destinationIds)
+      .emit(SocketEvent.RTC_CONNECTION, JSON.stringify(message));
   }
 
   afterInit(server: Server) {
@@ -80,7 +106,7 @@ export class ChatGateway
     const payload = JSON.stringify(connectedUsers);
     this.server.sockets
       .to(this.getConnectedSocketClientIds())
-      .emit('connectedUsers', payload);
+      .emit(SocketEvent.CONNECTED_USERS, payload);
   }
 
   private sendMessageToDestination(messageJson: string) {
@@ -88,7 +114,9 @@ export class ChatGateway
     const clientIds = this.getSocketClientIdsByUserId(message.to.id);
     if (clientIds) {
       clientIds.forEach((clientId) => {
-        this.server.sockets.to(clientId).emit('messageReceived', messageJson);
+        this.server.sockets
+          .to(clientId)
+          .emit(SocketEvent.MESSAGES_RECEIVED, messageJson);
         console.log(`Websocket sent message to ${clientId}`);
       });
     }
