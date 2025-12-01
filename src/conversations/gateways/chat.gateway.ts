@@ -20,13 +20,27 @@ enum SocketEvent {
   MESSAGES_RECEIVED = 'messagesReceived',
   CONNECTED_USERS = 'connectedUsers',
   RTC_CONNECTION = 'rtcConnection',
+  CALL_REQUEST = 'callRequest',
+  CALL_RESPONSE = 'callResponse',
 }
 
+// TODO: Move interfaces to another file
 interface RTCConnectionMessage {
   fromId: number;
   toId: number;
   type: 'ice_candidate' | 'offer' | 'answer';
   data: RTCSessionDescriptionInit | RTCIceCandidate;
+}
+
+interface CallRequest {
+  fromId: number;
+  toId: number;
+}
+
+interface CallResponse {
+  fromId: number;
+  toId: number;
+  response: 'yes' | 'no';
 }
 
 @WebSocketGateway(config.wsPort, {
@@ -59,6 +73,24 @@ export class ChatGateway
     this.server.sockets
       .to(destinationIds)
       .emit(SocketEvent.MESSAGES_READ, fromId);
+  }
+
+  @SubscribeMessage(SocketEvent.CALL_REQUEST)
+  async handleCallRequest(client: Socket, payload: string): Promise<void> {
+    const message = JSON.parse(payload) as CallRequest;
+    const destinationIds = this.getSocketClientIdsByUserId(message.toId);
+    this.server.sockets
+      .to(destinationIds)
+      .emit(SocketEvent.CALL_REQUEST, JSON.stringify(message));
+  }
+
+  @SubscribeMessage(SocketEvent.CALL_RESPONSE)
+  async handleCallResponse(client: Socket, payload: string): Promise<void> {
+    const message = JSON.parse(payload) as CallResponse;
+    const destinationIds = this.getSocketClientIdsByUserId(message.toId);
+    this.server.sockets
+      .to(destinationIds)
+      .emit(SocketEvent.CALL_RESPONSE, JSON.stringify(message));
   }
 
   @SubscribeMessage(SocketEvent.RTC_CONNECTION)
