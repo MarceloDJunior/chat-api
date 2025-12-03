@@ -15,13 +15,16 @@ import { UserDto } from '@/users/dtos/user.dto';
 const clientsMap: Record<string, number> = {};
 
 enum SocketEvent {
+  // Message
   SEND_MESSAGE = 'sendMessage',
   MESSAGES_READ = 'messagesRead',
-  MESSAGES_RECEIVED = 'messagesReceived',
+  MESSAGE_RECEIVED = 'messageReceived',
   CONNECTED_USERS = 'connectedUsers',
+  // Video
   RTC_CONNECTION = 'rtcConnection',
   CALL_REQUEST = 'callRequest',
   CALL_RESPONSE = 'callResponse',
+  CALL_END = 'callEnd',
 }
 
 // TODO: Move interfaces to another file
@@ -93,6 +96,15 @@ export class ChatGateway
       .emit(SocketEvent.CALL_RESPONSE, JSON.stringify(message));
   }
 
+  @SubscribeMessage(SocketEvent.CALL_END)
+  async handleCallEnd(client: Socket, payload: string): Promise<void> {
+    const message = JSON.parse(payload) as CallResponse;
+    const destinationIds = this.getSocketClientIdsByUserId(message.toId);
+    this.server.sockets
+      .to(destinationIds)
+      .emit(SocketEvent.CALL_END, JSON.stringify(message));
+  }
+
   @SubscribeMessage(SocketEvent.RTC_CONNECTION)
   async handleRTCConnection(client: Socket, payload: string): Promise<void> {
     const message = JSON.parse(payload) as RTCConnectionMessage;
@@ -148,7 +160,7 @@ export class ChatGateway
       clientIds.forEach((clientId) => {
         this.server.sockets
           .to(clientId)
-          .emit(SocketEvent.MESSAGES_RECEIVED, messageJson);
+          .emit(SocketEvent.MESSAGE_RECEIVED, messageJson);
         console.log(`Websocket sent message to ${clientId}`);
       });
     }
