@@ -25,6 +25,7 @@ enum SocketEvent {
   CALL_REQUEST = 'callRequest',
   CALL_RESPONSE = 'callResponse',
   CALL_END = 'callEnd',
+  CALL_MEDIA_STATE = 'callMediaState',
 }
 
 // TODO: Move interfaces to another file
@@ -44,6 +45,13 @@ interface CallResponse {
   fromId: number;
   toId: number;
   response: 'yes' | 'no';
+}
+
+interface CallMediaState {
+  fromId: number;
+  toId: number;
+  video: boolean;
+  audio: boolean;
 }
 
 @WebSocketGateway(config.wsPort, {
@@ -103,6 +111,18 @@ export class ChatGateway
     this.server.sockets
       .to(destinationIds)
       .emit(SocketEvent.CALL_END, JSON.stringify(message));
+  }
+
+  @SubscribeMessage(SocketEvent.CALL_MEDIA_STATE)
+  async handleCallMediaStateChange(
+    client: Socket,
+    payload: string,
+  ): Promise<void> {
+    const message = JSON.parse(payload) as CallMediaState;
+    const destinationIds = this.getSocketClientIdsByUserId(message.toId);
+    this.server.sockets
+      .to(destinationIds)
+      .emit(SocketEvent.CALL_MEDIA_STATE, JSON.stringify(message));
   }
 
   @SubscribeMessage(SocketEvent.RTC_CONNECTION)
