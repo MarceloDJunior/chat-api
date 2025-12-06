@@ -11,48 +11,15 @@ import { UsersService } from '@/users/services/users.service';
 import { Message } from '@/messages/entities/message.entity';
 import { config } from '@/config/configuration';
 import { UserDto } from '@/users/dtos/user.dto';
+import {
+  CallMediaState,
+  CallRequest,
+  CallResponse,
+  RTCConnectionMessage,
+  SocketEvent,
+} from '../dtos/websocket-events.dto';
 
 const clientsMap: Record<string, number> = {};
-
-enum SocketEvent {
-  // Message
-  SEND_MESSAGE = 'sendMessage',
-  MESSAGES_READ = 'messagesRead',
-  MESSAGE_RECEIVED = 'messageReceived',
-  CONNECTED_USERS = 'connectedUsers',
-  // Video
-  RTC_CONNECTION = 'rtcConnection',
-  CALL_REQUEST = 'callRequest',
-  CALL_RESPONSE = 'callResponse',
-  CALL_END = 'callEnd',
-  CALL_MEDIA_STATE = 'callMediaState',
-}
-
-// TODO: Move interfaces to another file
-interface RTCConnectionMessage {
-  fromId: number;
-  toId: number;
-  type: 'ice_candidate' | 'offer' | 'answer';
-  data: RTCSessionDescriptionInit | RTCIceCandidate;
-}
-
-interface CallRequest {
-  fromId: number;
-  toId: number;
-}
-
-interface CallResponse {
-  fromId: number;
-  toId: number;
-  response: 'yes' | 'no';
-}
-
-interface CallMediaState {
-  fromId: number;
-  toId: number;
-  video: boolean;
-  audio: boolean;
-}
 
 @WebSocketGateway(config.wsPort, {
   cors: config.isDev
